@@ -1,29 +1,38 @@
-# README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+# Voodoo GUI
 
-### What is this repository for? ###
+Voodoo GUI is a simple Python library to create user interfaces like Streamlit but with an intuitive and simpler syntax.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+## Installation
 
-### How do I get set up? ###
+```bash
+pip install voodoo-gui
+```
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+## Usage
 
-### Contribution guidelines ###
+Example code to create a simple page:
 
-* Writing tests
-* Code review
-* Other guidelines
+```python
+from voodoo.gui import Gui
+import voodoo.gui.builder as vo
 
-### Who do I talk to? ###
+text = "Original text"
 
-* Repo owner or admin
-* Other community or team contact
+with vo.Page() as page:
+    vo.text("# Getting started with voodoo GUI", mode="md")
+    vo.text(f"My text: {text}")
+
+    vo.input(f"{text}")
+
+Gui(page).run(debug=True)
+```
+
+Then run:
+
+```bash
+python voodoopy_gui_example.py
+```
+
+Access the page on `localhost:3000`.
+    
