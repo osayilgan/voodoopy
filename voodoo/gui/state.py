@@ -20,3 +20,16 @@ class State:
             super().__setattr__(name, value)
         else:
             self.components[name] = value
+
+    def set(self, key, value):
+        """Yeni bir state bileşeni ekler veya var olanı günceller."""
+        self.components[key] = value
+        print(f"State'deki {key} güncellendi: {value}")
+
+    def get(self, key, default=None):
+        """State içinden bir bileşeni alır, yoksa varsayılan değeri döner."""
+        return self.components.get(key, default)
+
+    def get_state(self):
+        """Tüm component değerlerini döner."""
+        return self.components
