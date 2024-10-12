@@ -1,6 +1,5 @@
-import requests
 import uuid
-from voodoo.gui.state import State  # State sınıfını dahil ediyoruz
+from voodoo.gui.state import State
 
 class Page:
     def __enter__(self):
@@ -34,11 +33,16 @@ class Page:
         self.state.set(id, text_value)
         return self  # Method chaining'e olanak sağlamak için self döndürülüyor
 
-    def button(self, text):
+    def button(self, text, function_ref=None):
         button_id = f"button-{len(self.event_list)}"  # Buton ID'si unique olmalı
         self.current_button = button_id  # Şu anki butonu set et
         self.content += f'<button id="{button_id}" class="mx-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{text}</button>'
-        self.event_list.append([])  # Her buton için boş bir liste başlatıyoruz
+
+        # Butonla ilişkili fonksiyonu event_list'e ekliyoruz
+        if function_ref is not None:
+            self.event_list.append([function_ref])  
+        else:
+            print(f"Geçilen fonksiyon referansı None: {function_ref}")
         return self  # Method chaining için self döndürülüyor
 
     def consolewrite(self, message):
@@ -83,46 +87,50 @@ class Page:
         """Python fonksiyonlarını tetiklemek için pyinvoke methodu."""
         self.method(function_ref, state)  # self.method'u çağırıyoruz
 
-    def render(self):
-        event_scripts = ""
-        for idx, events in enumerate(self.event_list):
-            event_scripts += f"""
-            var button_{idx} = document.getElementById('button-{idx}');
-            button_{idx}.addEventListener('click', function() {{
-                var state = {{}};  // HTML input'lardan state'i topluyoruz
-                document.querySelectorAll('input, label').forEach(function(element) {{
-                    state[element.id] = element.value;
-                }});
-                window.state = state;
-                console.log("Güncel State:", window.state);
+def render(self):
+    event_scripts = ""
+    for idx, events in enumerate(self.event_list):
+        function_ref = events[0]
+        event_scripts += f"""
+        var button_{idx} = document.getElementById('button-{idx}');
+        console.log('Event listener bağlandı: button_{idx}');
+        button_{idx}.addEventListener('click', function() {{
+            var state = {{}};  // HTML input'lardan state'i topluyoruz
+            document.querySelectorAll('input, label').forEach(function(element) {{
+                state[element.id] = element.value;
+            }});
+            window.state = state;
+            console.log("Güncel State:", window.state);
 
-                // Python fonksiyonunu çağırmak için tetikleme ekleniyor
-                window.pythonMethod = function() {{
-                    "{self.pyinvoke("{self.current_button}", self.state)}";  // pyinvoke fonksiyonuyla tetikleme
-                }};
-                window.pythonMethod();
+            // Python fonksiyonunu tetikliyoruz
+            window.pythonMethod = function() {{
+                "{self.pyinvoke(function_ref, self.state)}";  // pyinvoke ile fonksiyon tetikleniyor
+            }};
+            window.pythonMethod();
 
-                {''.join(events)}  // Event'leri çalıştır
-            }});  // Button click event listener
-            """
-        return f"""
-        <html>
-        <head>
-            <title>Voodoo GUI</title>
-            <link href="/static/css/tailwind.min.css" rel="stylesheet" />
-            <link href="/static/css/flowbite.min.css" rel="stylesheet" />
-            <script src="/static/js/flowbite.min.js"></script>
-        </head>
-        <body class="bg-gray-50 p-10">
-            <div class="max-w-lg mx-auto">
-                <div class="bg-white shadow-lg rounded-lg p-6 space-y-4">
-                    <h5 class="text-2xl font-semibold leading-tight text-gray-900 mb-4">Getting started with voodoo GUI</h5>
-                    {self.content}
-                </div>
-            </div>
-            <script>
-                {event_scripts}  // JavaScript event scripts
-            </script>
-        </body>
-        </html>
+            {''.join(events[1:])}  // Event'leri çalıştır
+        }});  // Button click event listener
         """
+    return f"""
+    <html>
+    <head>
+        <title>Voodoo GUI</title>
+        <link href="/static/css/tailwind.min.css" rel="stylesheet" />
+        <link href="/static/css/flowbite.min.css" rel="stylesheet" />
+        <script src="/static/js/flowbite.min.js"></script>
+    </head>
+    <body class="bg-gray-50 p-10">
+        <div class="max-w-lg mx-auto">
+            <div class="bg-white shadow-lg rounded-lg p-6 space-y-4">
+                <h5 class="text-2xl font-semibold leading-tight text-gray-900 mb-4">Getting started with voodoo GUI</h5>
+                {self.content}
+            </div>
+        </div>
+        <script>
+            console.log("Sayfa render edildi.");  // Render işlemi kontrol ediliyor
+            {event_scripts}  // JavaScript event scripts
+        </script>
+    </body>
+    </html>
+    """
+
