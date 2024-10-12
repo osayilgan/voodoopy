@@ -89,7 +89,7 @@ class Page:
                 // Backend'e POST isteği yapılıyor
                 fetch('http://localhost:3001/run_function', {{
                     method: 'POST',
-                    mode: 'no-cors',  // no-cors modu ekleniyor
+                  
                     headers: {{
                          'Content-Type': 'application/json',
                          'Accept': 'application/json'
