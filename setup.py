@@ -13,7 +13,8 @@ setup(
     include_package_data=True,
     install_requires=[
         "Flask", # Flask framework for serving web pages
-        "requests"
+        "requests",
+        "flask_cors"
     ],
     entry_points={
         "console_scripts": [

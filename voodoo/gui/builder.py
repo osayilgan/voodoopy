@@ -4,8 +4,8 @@ from voodoo.gui.state import State
 class Page:
     def __enter__(self):
         self.content = ""
-        self.event_list = []  # Her bir butonun işlemlerini tutacak geçici hafıza
-        self.current_button = None  # Şu anki buton
+        self.event_list = []
+        self.current_button = None
         self.state = State()  # State nesnesi ekleniyor
         return self
 
@@ -34,13 +34,13 @@ class Page:
         return self  # Method chaining'e olanak sağlamak için self döndürülüyor
 
     def button(self, text, function_ref=None):
-        button_id = f"button-{len(self.event_list)}"  # Buton ID'si unique olmalı
-        self.current_button = button_id  # Şu anki butonu set et
+        button_id = f"button-{len(self.event_list)}"
+        self.current_button = button_id
         self.content += f'<button id="{button_id}" class="mx-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{text}</button>'
 
         # Butonla ilişkili fonksiyonu event_list'e ekliyoruz
         if function_ref is not None:
-            self.event_list.append([function_ref])  
+            self.event_list.append([function_ref])
         else:
             print(f"Geçilen fonksiyon referansı None: {function_ref}")
         return self  # Method chaining için self döndürülüyor
@@ -49,8 +49,9 @@ class Page:
         if self.current_button is not None:
             self.event_list[int(self.current_button.split('-')[-1])].append(f'console.log("{message}");')
         return self  # Method chaining için self döndürülüyor
-
+    
     def callendpoint(self, endpoint, data):
+            # API çağrısını ilgili butonun event listesine ekle
         if self.current_button is not None:
             self.event_list[int(self.current_button.split('-')[-1])].append(f"""
                 var inputValue = {data};
@@ -58,7 +59,7 @@ class Page:
                     method: 'POST',
                     headers: {{
                         'Content-Type': 'application/json'
-                    }} }},
+                    }},
                     body: JSON.stringify(inputValue)
                 }})
                 .then(response => response.json())
@@ -71,66 +72,61 @@ class Page:
             """)
         return self  # Method chaining için self döndürülüyor
 
-    def method(self, function_ref, state):
-        """Button click sonrası Python fonksiyonunu tetiklemek için."""
-        try:
-            if callable(function_ref):
-                function_ref(state)
-            else:
-                print(f"Geçilen fonksiyon referansı çağrılamaz: {function_ref}")
-        except Exception as e:
-            print(f"Hata: {e}")
-        return self
+    def render(self):
+        event_scripts = ""
+        for idx, events in enumerate(self.event_list):
+            function_ref = events[0]
+            event_scripts += f"""
+            var button_{idx} = document.getElementById('button-{idx}');
+            button_{idx}.addEventListener('click', function() {{
+                var state = {{}};  // HTML input'lardan state'i topluyoruz
+                document.querySelectorAll('input, label').forEach(function(element) {{
+                    state[element.id] = element.value;
+                }});
+                window.state = state;
+                console.log("Güncel State:", window.state);
 
-    # pyinvoke methodu self ile kullanılabilir olacak
-    def pyinvoke(self, function_ref, state):
-        """Python fonksiyonlarını tetiklemek için pyinvoke methodu."""
-        self.method(function_ref, state)  # self.method'u çağırıyoruz
+                // Backend'e POST isteği yapılıyor
+                fetch('http://localhost:3001/run_function', {{
+                    method: 'POST',
+                    mode: 'no-cors',  // no-cors modu ekleniyor
+                    headers: {{
+                         'Content-Type': 'application/json',
+                         'Accept': 'application/json'
+                    }},
+                    body: JSON.stringify({{
+                        "function_name": "{function_ref.__name__}",
+                        "state": window.state  // State'i JSON'a çeviriyoruz
+                    }})
+                }})
+                .then(data => {{
+                    console.log("Response received");
+                }})
+                .catch((error) => {{
+                    console.error('Error:', error);
+                }});
 
-def render(self):
-    event_scripts = ""
-    for idx, events in enumerate(self.event_list):
-        function_ref = events[0]
-        event_scripts += f"""
-        var button_{idx} = document.getElementById('button-{idx}');
-        console.log('Event listener bağlandı: button_{idx}');
-        button_{idx}.addEventListener('click', function() {{
-            var state = {{}};  // HTML input'lardan state'i topluyoruz
-            document.querySelectorAll('input, label').forEach(function(element) {{
-                state[element.id] = element.value;
-            }});
-            window.state = state;
-            console.log("Güncel State:", window.state);
-
-            // Python fonksiyonunu tetikliyoruz
-            window.pythonMethod = function() {{
-                "{self.pyinvoke(function_ref, self.state)}";  // pyinvoke ile fonksiyon tetikleniyor
-            }};
-            window.pythonMethod();
-
-            {''.join(events[1:])}  // Event'leri çalıştır
-        }});  // Button click event listener
-        """
-    return f"""
-    <html>
-    <head>
-        <title>Voodoo GUI</title>
-        <link href="/static/css/tailwind.min.css" rel="stylesheet" />
-        <link href="/static/css/flowbite.min.css" rel="stylesheet" />
-        <script src="/static/js/flowbite.min.js"></script>
-    </head>
-    <body class="bg-gray-50 p-10">
-        <div class="max-w-lg mx-auto">
-            <div class="bg-white shadow-lg rounded-lg p-6 space-y-4">
-                <h5 class="text-2xl font-semibold leading-tight text-gray-900 mb-4">Getting started with voodoo GUI</h5>
-                {self.content}
+                {''.join(events[1:])}  // Diğer event'leri çalıştır
+            }});  // Button click event listener
+            """
+        return f"""
+        <html>
+        <head>
+            <title>Voodoo GUI</title>
+            <link href="/static/css/tailwind.min.css" rel="stylesheet" />
+            <link href="/static/css/flowbite.min.css" rel="stylesheet" />
+            <script src="/static/js/flowbite.min.js"></script>
+        </head>
+        <body class="bg-gray-50 p-10">
+            <div class="max-w-lg mx-auto">
+                <div class="bg-white shadow-lg rounded-lg p-6 space-y-4">
+                    <h5 class="text-2xl font-semibold leading-tight text-gray-900 mb-4">Getting started with voodoo GUI</h5>
+                    {self.content}
+                </div>
             </div>
-        </div>
-        <script>
-            console.log("Sayfa render edildi.");  // Render işlemi kontrol ediliyor
-            {event_scripts}  // JavaScript event scripts
-        </script>
-    </body>
-    </html>
-    """
-
+            <script>
+                {event_scripts}  // JavaScript event scripts
+            </script>
+        </body>
+        </html>
+        """
