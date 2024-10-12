@@ -1,13 +1,7 @@
 from voodoo.gui import Gui
 import voodoo.gui.builder as vo
-import voodoo.gui.state as st
 
-# State nesnesi oluşturuluyor
-state = st.State()
-state.update_state({
-    'input1': 'Değer 1',
-    'input2': 'Değer 2'
-})
+# Burada yeniden state oluşturmuyoruz, builder.py'deki Page sınıfındaki state'i kullanıyoruz
 
 # Backend'de verileri işleyen fonksiyon
 def process_data(state):
@@ -20,20 +14,16 @@ def process_data(state):
         'input2': 'Değer 4'
     })
     
-    state.set('input1','Deger 5')
-    
     # Frontend'e yeni statelerin yansıtılması için
     return state.get_state()
 
 # GUI oluşturma
 with vo.Page() as page:
+    # Page içindeki state'i kullanıyoruz, dışarıdan yeniden state oluşturmuyoruz
     page.text("Let's Make Some Voodoo!", mode="md")
-    page.input(id="input1", text=state.get('input1'))
-    page.input(id="input2", text=state.get('input2'))
+    page.input(id="input1", text=page.state.get('input1'))  # Page'deki state kullanılıyor
+    page.input(id="input2", text=page.state.get('input2'))  # Page'deki state kullanılıyor
     
     # Butona tıklandığında process_data çalıştırılıyor
-    page.button("Submit").method(process_data, state).consolewrite("Done").consolewrite(f"Input 1: {state.get('input1')}, Input 2: {state.get('input2')}")
-
-    # GUI'yi başlatıyoruz ve sayfa ile birlikte çalıştırıyoruz
-    gui = Gui(page)  # Page nesnesini Gui nesnesine veriyoruz
-    gui.run(debug=True)
+    page.button("Submit").method(process_data, page.state).consolewrite("Done")
+    Gui(page).run(debug=True)
