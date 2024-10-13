@@ -95,12 +95,13 @@ class Page:
                          'Accept': 'application/json'
                     }},
                     body: JSON.stringify({{
-                        "function_name": "{function_ref.__name__}",
+                        "function": "{function_ref.__name__}",
                         "state": window.state  // State'i JSON'a çeviriyoruz
                     }})
                 }})
                 .then(data => {{
                     console.log("Response received");
+                    console.log("data:", data);
                 }})
                 .catch((error) => {{
                     console.error('Error:', error);
