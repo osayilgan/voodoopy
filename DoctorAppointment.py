@@ -1,4 +1,4 @@
-from voodoo.gui import Gui,backend
+from voodoo.gui import Gui
 import voodoo.gui.builder as vo
 
 

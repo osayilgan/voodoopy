@@ -1,7 +1,7 @@
 import os
 from flask import Flask, render_template_string
 import threading  # Threading kullanarak diğer Flask uygulamasını başlatacağız
-from . import backend  # backend dosyasını aynı dizindeki __init__.py'den içe aktarıyoruz
+from . import backendserver  # backend dosyasını aynı dizindeki __init__.py'den içe aktarıyoruz
 
 class Gui:
     def __init__(self, page):
@@ -9,7 +9,7 @@ class Gui:
 
     def start_backend(self):
         # Backend'i ayrı bir thread'de başlatıyoruz, ancak debug ve reloader kapalı
-        backend.app.run(host="0.0.0.0", port=3001, debug=False, use_reloader=False)
+        backendserver.app.run(host="0.0.0.0", port=3001, debug=False, use_reloader=False)
 
     def run(self, debug=False):
         # Backend'i ayrı bir thread'de başlatıyoruz
