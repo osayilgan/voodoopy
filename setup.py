@@ -1,4 +1,3 @@
-
 from setuptools import setup, find_packages
 
 setup(
@@ -7,20 +6,14 @@ setup(
     description="A Python library to create UIs like Streamlit but with simple syntax",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    author="Your Name",
-    author_email="your.email@example.com",
-    packages=find_packages(),
+    author="yusuf karatoprak",
+    author_email="yusuf.karatoprak@voodoopy.com",
+    packages=find_packages(),  # Automatically find packages in the directory
     include_package_data=True,
     install_requires=[
-        "Flask", # Flask framework for serving web pages
+        "Flask",
         "requests",
         "flask_cors"
     ],
-    entry_points={
-        "console_scripts": [
-            "voodoo-gui = voodoo.gui:main",
-        ]
-    },
     python_requires=">=3.6",
 )
-    
