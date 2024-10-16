@@ -95,7 +95,7 @@ class Page:
                          'Accept': 'application/json'
                     }},
                     body: JSON.stringify({{
-                        "function": "{function_ref.__name__}",
+                        "function": "{function_ref}",
                         "state": window.state  // State'i JSON'a çeviriyoruz
                     }})
                 }})
