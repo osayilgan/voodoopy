@@ -17,6 +17,7 @@ if __name__ == "__main__":
         # Her buton farklı fonksiyon referansı alıyor
         page.button("Submit", "process_data").consolewrite(f'submit:{page.state}')
         page.button("Another Button", "another_function").consolewrite(f'Another button: {page.state}')
-        
+       # page.panel(title="My Custom Panel", bg_color="bg-pastel-green", width="max-w-md")
+        page.Setup(title="Getting started with voodoo GUI")
     
         Gui(page).run(debug=True)
