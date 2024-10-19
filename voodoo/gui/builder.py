@@ -50,7 +50,7 @@ class Page:
             if (button) {{
                 console.log("Button with id {button_id} found");
                 button.addEventListener('click', function() {{
-                    
+                    //alert("Button with id {button_id} clicked!");
                     var state = {{}};
                     // Tüm input'lardan state topluyoruz
                     document.querySelectorAll('input').forEach(function(element) {{
