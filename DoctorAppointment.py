@@ -18,5 +18,5 @@ if __name__ == "__main__":
         page.button("Submit", "process_data").consolewrite(f'submit:{page.state}')
         page.button("Another Button", "another_function").consolewrite(f'Another button: {page.state}')
         
-        gui = Gui(page)
-        gui.run(debug=True)
+    
+        Gui(page).run(debug=True)
