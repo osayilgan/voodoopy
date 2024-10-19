@@ -43,20 +43,14 @@ class Page:
 
     def render(self):
         event_scripts = ""
-        # event_list'teki her bir buton için event listener'ı ekle
-        if not self.event_list:
-                print("Liste boş")
-        else:
-            # event_list'teki her bir buton için event listener'ı ekle
-            for button_id, function_ref in self.event_list.items():
-                print(f'button id: {button_id}, function: {function_ref}')   
+       
         for button_id, function_ref in self.event_list.items():
             event_scripts += f"""
             var button = document.getElementById('{button_id}');
             if (button) {{
                 console.log("Button with id {button_id} found");
                 button.addEventListener('click', function() {{
-                    alert("Button with id {button_id} clicked!");
+                    
                     var state = {{}};
                     // Tüm input'lardan state topluyoruz
                     document.querySelectorAll('input').forEach(function(element) {{
