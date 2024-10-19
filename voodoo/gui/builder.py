@@ -42,41 +42,50 @@ class Page:
 
     def render(self):
         event_scripts = ""
-        # Event'leri döngüyle işliyoruz
+    # event_list'teki her bir buton için
         for button_id, function_ref in self.event_list.items():
             event_scripts += f"""
             var button_{button_id} = document.getElementById('{button_id}');
             button_{button_id}.addEventListener('click', function() {{
                 var state = {{}};  // HTML input'lardan state'i topluyoruz
-                document.querySelectorAll('input, label').forEach(function(element) {{
+                document.querySelectorAll('input').forEach(function(element) {{
                     state[element.id] = element.value;
                 }});
                 window.state = state;
-                console.log("Güncel State:", window.state);
+                console.log("Current State:", window.state);
 
-                // Backend fonksiyonunu tetikleme
-                if ('{function_ref}' === 'process_data') {{
-                    process_data(window.state);
-                }} else if ('{function_ref}' === 'another_function') {{
-                    another_function(window.state);
-                }}
-            }});
+                // Backend'e POST isteği yapılıyor
+                fetch('http://localhost:3001/run_function', {{
+                    method: 'POST',
+                    headers: {{
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }},
+                    body: JSON.stringify({{
+                        "function": "{function_ref}",
+                        "state": window.state  // State'i JSON'a çeviriyoruz
+                    }})
+                }})
+                .then(response => response.json())
+                .then(data => {{
+                    console.log("Response received:", data);
+                }})
+                .catch((error) => {{
+                    console.error('Error:', error);
+                }});
+            }});  // Button click event listener
             """
-
+        # Tüm event scriptlerini ekleyip HTML'yi tamamlıyoruz
         return self.content + f"""
             <script>
                 {event_scripts}
-                function process_data(state) {{
-                    alert("Processing: " + JSON.stringify(state));
-                }}
-
-                function another_function(state) {{
-                    alert("Another Function: " + JSON.stringify(state));
-                }}
             </script>
         </body>
         </html>
         """
+
+
+
 
 
 class Panel:
