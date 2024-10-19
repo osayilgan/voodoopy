@@ -4,15 +4,16 @@ from voodoo.gui.state import State
 class Page:
     def __enter__(self):
         self.content = ""
-        self.event_list = {}  # Event list bir dictionary olarak tanımlandı
-        self.state = State()  # State nesnesi ekleniyor
+        self.event_list = {}  # Event list dictionary olarak tanımlandı
+        self.state = State()  # State nesnesi eklendi
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
     def add_panel(self, panel):
-        """Panele ait içerikleri sayfaya ekliyor."""
+        """Panele ait içerikleri sayfaya ekler."""
+        self.event_list.update(panel.event_list)
         self.content += panel.render()
         return self
 
@@ -42,50 +43,64 @@ class Page:
 
     def render(self):
         event_scripts = ""
-    # event_list'teki her bir buton için
+        # event_list'teki her bir buton için event listener'ı ekle
+        if not self.event_list:
+                print("Liste boş")
+        else:
+            # event_list'teki her bir buton için event listener'ı ekle
+            for button_id, function_ref in self.event_list.items():
+                print(f'button id: {button_id}, function: {function_ref}')   
         for button_id, function_ref in self.event_list.items():
             event_scripts += f"""
-            var button_{button_id} = document.getElementById('{button_id}');
-            button_{button_id}.addEventListener('click', function() {{
-                var state = {{}};  // HTML input'lardan state'i topluyoruz
-                document.querySelectorAll('input').forEach(function(element) {{
-                    state[element.id] = element.value;
-                }});
-                window.state = state;
-                console.log("Current State:", window.state);
+            var button = document.getElementById('{button_id}');
+            if (button) {{
+                console.log("Button with id {button_id} found");
+                button.addEventListener('click', function() {{
+                    alert("Button with id {button_id} clicked!");
+                    var state = {{}};
+                    // Tüm input'lardan state topluyoruz
+                    document.querySelectorAll('input').forEach(function(element) {{
+                        state[element.id] = element.value;
+                    }});
+                    console.log("Collected State:", state);
 
-                // Backend'e POST isteği yapılıyor
-                fetch('http://localhost:3001/run_function', {{
-                    method: 'POST',
-                    headers: {{
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    }},
-                    body: JSON.stringify({{
-                        "function": "{function_ref}",
-                        "state": window.state  // State'i JSON'a çeviriyoruz
+                    // Backend'e POST isteği yapılıyor
+                    fetch('http://localhost:3001/run_function', {{
+                        method: 'POST',
+                        headers: {{
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }},
+                        body: JSON.stringify({{
+                            "function": "{function_ref}",
+                            "state": state
+                        }})
                     }})
-                }})
-                .then(response => response.json())
-                .then(data => {{
-                    console.log("Response received:", data);
-                }})
-                .catch((error) => {{
-                    console.error('Error:', error);
-                }});
-            }});  // Button click event listener
+                    .then(response => response.json())
+                    .then(data => {{
+                        console.log("Response received:", data);
+                    }})
+                    .catch((error) => {{
+                        console.error("Error in fetch:", error);
+                    }});
+                }});  // Button click event listener
+            }} else {{
+                console.error("Button with id {button_id} not found");
+            }}
             """
-        # Tüm event scriptlerini ekleyip HTML'yi tamamlıyoruz
-        return self.content + f"""
+        
+        # Tüm event scriptlerini sayfa içeriğine ekleyip HTML'yi döndürüyoruz
+        full_html = self.content + f"""
             <script>
                 {event_scripts}
             </script>
         </body>
         </html>
         """
-
-
-
+        
+        # HTML çıktısını kontrol edelim
+        #print(full_html)
+        return full_html
 
 
 class Panel:
@@ -122,12 +137,6 @@ class Panel:
             self.event_list[button_id] = function_ref
         else:
             print(f"Geçilen fonksiyon referansı None: {function_ref}")
-        return self
-
-    def consolewrite(self, message):
-        # Konsol çıktısı ekliyoruz
-        if self.current_button is not None:
-            self.event_list[self.current_button].append(f'console.log("{message}");')
         return self
 
     def render(self):
