@@ -132,6 +132,10 @@ class Panel:
         else:
             print(f"Geçilen fonksiyon referansı None: {function_ref}")
         return self
+    
+    def newline(self):
+        self.content += "<br>"
+        return self
 
     def render(self):
         return f'''
