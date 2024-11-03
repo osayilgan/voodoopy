@@ -2,8 +2,12 @@ Metadata-Version: 2.1
 Name: voodoo-gui
 Version: 0.1
 Summary: A Python library to create UIs like Streamlit but with simple syntax
+Home-page: https://github.com/yusufkaratoprak/voodoopy
 Author: yusuf karatoprak
-Author-email: yusuf.karatoprak@voodoopy.com
+Author-email: yusuf.karatoprak@gmail.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 Requires-Dist: Flask
@@ -120,3 +124,6 @@ if __name__ == "__main__":
         page.Setup(title="System Voodoo Hospital")
     
     Gui(page).run(debug=True)
+```
+
+![Output](sample.png)
