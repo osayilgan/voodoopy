@@ -18,7 +18,7 @@ if __name__ == "__main__":
     with vo.Page() as page:
         # Panel başlatıyoruz
         with vo.Panel() as panel1:
-            panel1.text("Doctor Appointment", mode="md") \
+            panel1.text("Doctor Appointment", mode="big") \
                   .input(id="input1", text="Doctor Name") \
                   .input(id="input2", text="Doctor SurName") \
                   .button("Submit", "submit") \
@@ -27,7 +27,7 @@ if __name__ == "__main__":
         page.add_panel(panel1)
         
         with vo.Panel() as panel2:
-            panel2.text("Patient Info", mode="md") \
+            panel2.text("Patient Info", mode="big") \
                   .input(id="input3", text="Patient Name") \
                   .input(id="input4", text="Patient SurName") \
                   .button("Submit for Patient", "submitpatient") \
