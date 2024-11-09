@@ -106,8 +106,8 @@ class Panel:
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
-    def text(self, text, mode="normal"):
-        if mode == "md":
+    def text(self, text, mode="big"):
+        if mode == "big":
             self.content += f'<h1 class="text-3xl font-bold text-gray-900">{text}</h1>'
         else:
             self.content += f'<p class="text-base text-gray-700">{text}</p>'
@@ -131,10 +131,6 @@ class Panel:
             self.event_list[button_id] = function_ref
         else:
             print(f"Geçilen fonksiyon referansı None: {function_ref}")
-        return self
-    
-    def newline(self):
-        self.content += "<br>"
         return self
 
     def render(self):

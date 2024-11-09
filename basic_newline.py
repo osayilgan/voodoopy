@@ -12,7 +12,7 @@ if __name__ == "__main__":
     with vo.Page() as page:
         # Panel başlatıyoruz
         with vo.Panel() as panel:
-            panel.text("Let's Make Some Voodoo!", mode="md") \
+            panel.text("Let's Make Some Voodoo!", mode="big") \
                   .newline().newline().newline().newline().newline() \
                   .input(id="input1", text="Değer 1") \
                   .input(id="input2", text="Değer 2") \
