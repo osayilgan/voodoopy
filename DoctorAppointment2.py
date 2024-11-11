@@ -41,6 +41,7 @@ if __name__ == "__main__":
 
         page.add_panel(panel2)
 
-        page.initial(initialfunction).setup(title="System Voodoo Hospital").end(endfunction)
+        #page.initial(initialfunction).setup(title="System Voodoo Hospital").end(endfunction)
+        page.setup(title="System Voodoo Hospital")
     
     Gui(page).run(debug=True)

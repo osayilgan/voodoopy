@@ -12,21 +12,10 @@ class Page:
         pass
 
     def add_panel(self, panel):
-        """Adding Panel Content"""
+        """Panele ait içerikleri sayfaya ekler."""
         self.event_list.update(panel.event_list)
         self.content += panel.render()
         return self
-    
-    def initial(self, initial_function=None):
-        if initial_function:
-            initial_function()
-        return self
-    
-    def end(self, end_function=None):
-        if end_function:
-            end_function()
-        return self
-       
 
     def setup(self, title: str, width: str = "max-w-lg", shadow: bool = True, rounded: bool = True):
         shadow_class = "shadow-lg" if shadow else ""
@@ -40,21 +29,63 @@ class Page:
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link href="/static/css/tailwind.min.css" rel="stylesheet" />
             <link href="/static/css/flowbite.min.css" rel="stylesheet" />
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
             <script src="/static/js/flowbite.min.js"></script>
+            <script>
+                function toggleDarkMode() {{
+                    document.documentElement.classList.toggle('dark');
+                    localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                }}
+                document.addEventListener('DOMContentLoaded', () => {{
+                    if (localStorage.getItem('theme') === 'dark') {{
+                        document.documentElement.classList.add('dark');
+                    }}
+                }});
+            </script>
         </head>
-        <body class="bg-gray-50 p-10">
+        <body class="bg-gray-100 dark:bg-gray-800 dark:text-gray-200 transition-colors duration-300 p-10">
+            
+            <!-- Sağ üst köşede dark mode geçiş butonu -->
+            <div class="absolute top-4 right-4 flex flex-col items-center space-y-2">
+                <span class="text-gray-800 dark:text-gray-200 font-medium">Mode</span>
+                <div class="flex items-center p-1 bg-gray-200 dark:bg-gray-700 rounded-lg">
+                    <!-- Gündüz modu ikonu -->
+                    <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-l-lg bg-white dark:bg-transparent text-yellow-500 dark:text-gray-400">
+                        <i class="fas fa-sun"></i>
+                    </button>
+                    
+                    <!-- Gece modu ikonu -->
+                    <button onclick="toggleDarkMode()" class="w-10 h-10 flex items-center justify-center rounded-r-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-400">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+
             <div class="{width} mx-auto">
-                <div class="bg-white {shadow_class} {rounded_class} p-6 space-y-4">
-                    <h5 class="text-2xl font-semibold leading-tight text-gray-900 mb-4">{title}</h5>
+                <div class="bg-white dark:bg-gray-900 {shadow_class} {rounded_class} p-6 space-y-4">
+                    <h5 class="text-2xl font-semibold leading-tight text-gray-900 dark:text-gray-100 mb-4">{title}</h5>
                     {self.content}
                 </div>
             </div>
         '''
         return self
 
+
     def render(self):
         event_scripts = ""
-       
+        event_scripts = """
+    function toggleDarkMode() {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+    });
+"""
+
         for button_id, function_ref in self.event_list.items():
             event_scripts += f"""
             var button = document.getElementById('{button_id}');
@@ -117,8 +148,8 @@ class Panel:
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
-    def text(self, text, mode="big"):
-        if mode == "big":
+    def text(self, text, mode="normal"):
+        if mode == "md":
             self.content += f'<h1 class="text-3xl font-bold text-gray-900">{text}</h1>'
         else:
             self.content += f'<p class="text-base text-gray-700">{text}</p>'
@@ -142,6 +173,10 @@ class Panel:
             self.event_list[button_id] = function_ref
         else:
             print(f"Geçilen fonksiyon referansı None: {function_ref}")
+        return self
+    
+    def newline(self):
+        self.content += "<br>"
         return self
 
     def render(self):
