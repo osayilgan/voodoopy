@@ -25,8 +25,8 @@ if __name__ == "__main__":
         # Panel başlatıyoruz
         with vo.Panel() as panel1:
             panel1.text("Doctor Appointment", mode="big") \
-                  .input(id="input1", text="Doctor Name") \
-                  .input(id="input2", text="Doctor SurName") \
+                  .input(id="input1", label="Doctor Name") \
+                  .input(id="input2", label="Doctor SurName") \
                   .button("Submit", "submit") \
                   .button("Cancel", "cancel")
 
@@ -40,8 +40,7 @@ if __name__ == "__main__":
                   .button("Cancel Appointment", "cancelpatient")
 
         page.add_panel(panel2)
-
-        #page.initial(initialfunction).setup(title="System Voodoo Hospital").end(endfunction)
-        page.setup(title="System Voodoo Hospital")
+        page.initial(initialfunction).setup(title="System Voodoo Hospital").end(endfunction)
+      
     
     Gui(page).run(debug=True)

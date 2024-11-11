@@ -16,6 +16,16 @@ class Page:
         self.event_list.update(panel.event_list)
         self.content += panel.render()
         return self
+    
+    def initial(self, initial_function=None):
+        if initial_function:
+            initial_function()
+        return self
+    
+    def end(self, end_function=None):
+        if end_function:
+            end_function()
+        return self
 
     def setup(self, title: str, width: str = "max-w-lg", shadow: bool = True, rounded: bool = True):
         shadow_class = "shadow-lg" if shadow else ""
@@ -149,17 +159,32 @@ class Panel:
         pass
 
     def text(self, text, mode="normal"):
-        if mode == "md":
+        if mode == "big":
             self.content += f'<h1 class="text-3xl font-bold text-gray-900">{text}</h1>'
         else:
             self.content += f'<p class="text-base text-gray-700">{text}</p>'
         return self
 
-    def input(self, id=None, text=None):
-        text_value = "" if text is None else str(text)
-        id = str(uuid.uuid4()) if id is None else id
-        self.content += f'<input id="{id}" class="border border-gray-300 p-2 rounded-md w-full" type="text" value="{text_value}">'
+    def input(self, id=None, text=None, label=None):
+        # ID ve placeholder metinleri ayarlanıyor
+        input_id = str(uuid.uuid4()) if id is None else id
+        placeholder_text = "" if text is None else str(text)
+        
+        # Label kontrol ediliyor; varsa label ile input ekleniyor, yoksa sadece placeholder ile input ekleniyor
+        if label:
+            self.content += f'''
+                <div class="mb-4">
+                    <label for="{input_id}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+                    <input id="{input_id}" class="border border-gray-300 p-2 rounded-md w-full text-black" type="text" value="{placeholder_text}">
+                </div>
+            '''
+        else:
+            self.content += f'''
+                <input id="{input_id}" class="border border-gray-300 p-2 rounded-md w-full mb-4 text-black" type="text" placeholder="{placeholder_text}">
+            '''
+        
         return self
+
 
     def button(self, text, function_ref=None):
         # Benzersiz bir ID veriyoruz, eğer yoksa yeni bir GUID üretiyoruz
