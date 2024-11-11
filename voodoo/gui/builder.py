@@ -12,12 +12,23 @@ class Page:
         pass
 
     def add_panel(self, panel):
-        """Panele ait içerikleri sayfaya ekler."""
+        """Adding Panel Content"""
         self.event_list.update(panel.event_list)
         self.content += panel.render()
         return self
+    
+    def initial(self, initial_function=None):
+        if initial_function:
+            initial_function()
+        return self
+    
+    def end(self, end_function=None):
+        if end_function:
+            end_function()
+        return self
+       
 
-    def Setup(self, title: str, width: str = "max-w-lg", shadow: bool = True, rounded: bool = True):
+    def setup(self, title: str, width: str = "max-w-lg", shadow: bool = True, rounded: bool = True):
         shadow_class = "shadow-lg" if shadow else ""
         rounded_class = "rounded-lg" if rounded else ""
 
