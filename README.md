@@ -1,4 +1,7 @@
-![voodoo_doll ](favicon1.png)
+
+<div style="text-align: center;">
+  <img src="favicon1.png" alt="Kedi resmi" width="300" />
+</div>
 # Voodoo GUI
 
 Voodoo GUI is a simple Python library to create user interfaces like Streamlit but with an intuitive and simpler syntax.
