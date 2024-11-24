@@ -1,4 +1,4 @@
-
+![voodoo_doll ](favicon1.png)
 # Voodoo GUI
 
 Voodoo GUI is a simple Python library to create user interfaces like Streamlit but with an intuitive and simpler syntax.
